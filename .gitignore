@@ -1,0 +1,5 @@
+dist/
+tmp/
+
+# deps
+node_modules/
