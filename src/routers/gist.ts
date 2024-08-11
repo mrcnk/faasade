@@ -20,7 +20,7 @@ export const gistRouter = new Hono();
 gistRouter.all("/gist/:gistId/:fileName", async ({ req, json, html }) => {
 	const gistId = req.param("gistId");
 	const fileName = req.param("fileName");
-	const filePath = join(__dirname, "..", "tmp", `${gistId}.${fileName}`);
+	const filePath = join(__dirname, "..", "tmp", `${gistId}.${fileName}.js`);
 	const { data: gistData, error: gistFetchError } = await until(() =>
 		fetchGist(gistId),
 	);
