@@ -9,6 +9,13 @@ Stupid simple FaaS (Function as a Service) runner using GitHub Gists.
 - Code is executed in a Node.js Worker Thread Pool (tinypool).
 - Pretty errors.
 
+## Configuration
+
+### Environment variables
+
+- `FAASADE_CORS_ORIGIN` - A comma-separated list of CORS allowed origins. If not set, CORS is disabled (set to wildcard).
+- `FAASADE_GIST_ALLOWLIST` - A comma-separated list of Gist IDs that are allowed to be run. If not set, all Gists are allowed.
+
 ## Function syntax
 
 Service functions can be written in JavaScript or TypeScript. The function should be the default export of the file. For JavaScript, the function can be either CommonJS or ES module (ESM is preferred, for CJS use `.cjs` extension).

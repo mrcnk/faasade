@@ -8,6 +8,8 @@ import Youch from "youch";
 import { z } from "zod";
 import type { GistFile, GitHubGist } from "./types.js";
 
+const ALLOWED_GISTS = process.env?.FAASADE_GIST_ALLOWLIST;
+
 const LiteralSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
 type Literal = z.infer<typeof LiteralSchema>;
 type Json = Literal | { [key: string]: Json } | Json[];
@@ -103,4 +105,18 @@ export const getErrorHtml = ({
 }) => {
 	const youch = new Youch(error, req);
 	return youch.toHTML();
+};
+
+export const getAllowedGists = () => {
+	// biome-ignore lint/complexity/useLiteralKeys: Biome clashes with tsc
+	const ALLOWED_GISTS = process.env?.["FAASADE_GIST_ALLOWLIST"];
+	if (!ALLOWED_GISTS) return [];
+	return ALLOWED_GISTS.split(",");
+};
+
+export const getAllowedOrigins = () => {
+	// biome-ignore lint/complexity/useLiteralKeys: Biome clashes with tsc
+	const ALLOWED_ORIGINS = process.env?.["FAASADE_CORS_ORIGIN"];
+	if (!ALLOWED_ORIGINS) return "*";
+	return ALLOWED_ORIGINS.split(",");
 };
