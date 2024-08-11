@@ -3,10 +3,10 @@ import { join } from "node:path";
 import { until } from "@open-draft/until";
 import { Hono } from "hono";
 import { writeFile } from "write-file-safe";
-import Youch from "youch";
 import { executeInPool } from "../runner.js";
 import {
 	JsonSchema,
+	assignExtension,
 	fetchGist,
 	getDirname,
 	getErrorHtml,
@@ -20,7 +20,6 @@ export const gistRouter = new Hono();
 gistRouter.all("/gist/:gistId/:fileName", async ({ req, json, html }) => {
 	const gistId = req.param("gistId");
 	const fileName = req.param("fileName");
-	const filePath = join(__dirname, "..", "tmp", `${gistId}.${fileName}.js`);
 	const { data: gistData, error: gistFetchError } = await until(() =>
 		fetchGist(gistId),
 	);
@@ -37,6 +36,13 @@ gistRouter.all("/gist/:gistId/:fileName", async ({ req, json, html }) => {
 		return html(getErrorHtml({ error: transformationError, req }));
 	if (!transformedContent)
 		return html(getErrorHtml({ error: new Error("No code to run"), req }));
+	const extension = assignExtension(fileName);
+	const filePath = join(
+		__dirname,
+		"..",
+		"tmp",
+		`${gistId}.${fileName}.${extension}`,
+	);
 	await writeFile(filePath, transformedContent);
 	const { data: executionResult, error: executionError } = await until(() =>
 		executeInPool({ filePath, req }),

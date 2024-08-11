@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 import { transform } from "esbuild";
 import type { HonoRequest } from "hono";
 import { ofetch } from "ofetch";
-import { match } from "ts-pattern";
+import { P, match } from "ts-pattern";
 import Youch from "youch";
 import { z } from "zod";
 import type { GistFile, GitHubGist } from "./types.js";
@@ -43,10 +43,20 @@ export const transformContent = (file: GistFile) => {
 				(
 					await transform(content, {
 						loader: "ts",
+						format: "esm",
 					})
 				).code,
 		)
 		.exhaustive();
+};
+
+export const assignExtension = (fileName: string) => {
+	return match(fileName)
+		.with(P.string.endsWith(".ts"), () => "mjs")
+		.with(P.string.endsWith(".mjs"), () => "mjs")
+		.with(P.string.endsWith(".cjs"), () => "cjs")
+		.with(P.string.endsWith(".js"), () => "mjs")
+		.run();
 };
 
 export const getErrorHtml = ({
