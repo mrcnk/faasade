@@ -1,0 +1,29 @@
+name: Dockerize latest version
+on:
+  workflow_dispatch:
+jobs:
+  dockerize_and_push:
+    name: Dockerize and push to GHCR
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Nixpacks
+        run: |
+          curl -LO https://github.com/railwayapp/nixpacks/releases/download/v1.26.0/nixpacks-v1.26.0-amd64.deb
+          sudo dpkg -i nixpacks-v1.26.0-amd64.deb
+      # - name: Copy .env
+      #   run: cp .env.example .env
+      - name: Build image
+        run: nixpacks build .
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Tag image
+        run: docker tag $(docker images --format='{{.ID}}' | head -1) ghcr.io/mrcnk/faasade:$(git rev-parse --short HEAD)
+      - name: Push to GHCR
+        run: docker push ghcr.io/mrcnk/faasade:$(git rev-parse --short HEAD)

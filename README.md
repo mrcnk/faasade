@@ -56,3 +56,8 @@ Whatever the code in the file returns. If it's a valid JSON, it's gonna be parse
 - [ ] Consider sandboxing the code execution.
 - [ ] Add /gist/:gistId route to list all the runnable files in the Gist.
 - [ ] Add more tests.
+
+## Credits
+
+- [tinypool](https://github.com/tinylibs/tinypool) - A tiny Node.js Worker Thread Pool.
+- [Hono](https://hono.dev) - Web application framework.
