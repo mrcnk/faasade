@@ -16,10 +16,22 @@ export const JsonSchema: z.ZodType<Json> = z.lazy(() =>
 	z.union([LiteralSchema, z.array(JsonSchema), z.record(JsonSchema)]),
 );
 
+/**
+ * Fetches a GitHub Gist using its ID.
+ *
+ * @param {string} gistId - The ID of the Gist to fetch.
+ * @returns {Promise<GitHubGist>} The fetched Gist.
+ */
 export const fetchGist = async (gistId: string) => {
 	return ofetch<GitHubGist>(`https://api.github.com/gists/${gistId}`);
 };
 
+/**
+ * Sanitizes the request by extracting the method, url, headers, and body.
+ *
+ * @param {HonoRequest} req - The request to be sanitized.
+ * @returns {Promise<{ method: string; url: string; headers: any; body: string; }>} The sanitized request.
+ */
 export const sanitizeRequest = async (req: HonoRequest) => {
 	return {
 		method: req.raw.method,
@@ -29,11 +41,22 @@ export const sanitizeRequest = async (req: HonoRequest) => {
 	};
 };
 
+/**
+ * Returns the directory name of the current module file.
+ *
+ * @returns {string} The directory name of the current module file.
+ */
 export const getDirname = () => {
 	const __filename = fileURLToPath(import.meta.url);
 	return dirname(__filename);
 };
 
+/**
+ * Transforms the content of a Gist file based on its language.
+ *
+ * @param {GistFile} file - The Gist file whose content is to be transformed.
+ * @returns {Promise<string>} The transformed content of the Gist file.
+ */
 export const transformContent = (file: GistFile) => {
 	return match(file)
 		.with({ language: "JavaScript" }, ({ content }) => Promise.resolve(content))
@@ -50,6 +73,12 @@ export const transformContent = (file: GistFile) => {
 		.exhaustive();
 };
 
+/**
+ * Assigns the extension for the given file name after transformation.
+ *
+ * @param {string} fileName - The name of the file.
+ * @returns {string} The extension after transformation..
+ */
 export const assignExtension = (fileName: string) => {
 	return match(fileName)
 		.with(P.string.endsWith(".ts"), () => "mjs")
@@ -59,6 +88,12 @@ export const assignExtension = (fileName: string) => {
 		.run();
 };
 
+/**
+ * Generates an HTML representation of an error.
+ *
+ * @param {{ error: unknown; req: HonoRequest; }} { error, req } - An object containing the error to be represented and the request that caused the error.
+ * @returns {Promise<string>} The HTML representation of the error.
+ */
 export const getErrorHtml = ({
 	error,
 	req,
