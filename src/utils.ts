@@ -8,8 +8,6 @@ import Youch from "youch";
 import { z } from "zod";
 import type { GistFile, GitHubGist } from "./types.js";
 
-const ALLOWED_GISTS = process.env?.FAASADE_GIST_ALLOWLIST;
-
 const LiteralSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
 type Literal = z.infer<typeof LiteralSchema>;
 type Json = Literal | { [key: string]: Json } | Json[];
